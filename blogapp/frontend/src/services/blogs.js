@@ -29,4 +29,10 @@ const remove = async (id) => {
   await axios.delete(`${baseUrl}/${id}`, { headers });
 };
 
-export default { getAll, create, update, remove };
+const like = async (object) => {
+  const updatedBlog = { ...object, likes: object.likes + 1 }
+  const response = await axios.put(`${baseUrl}/${object.id}`, updatedBlog, { headers })
+  return response.data
+}
+
+export default { getAll, create, update, remove, like };
