@@ -16,7 +16,7 @@ const blogSlice = createSlice({
       blogToLike.likes++
     },
     remove(state, action) {
-      return action.payload
+      return state.filter(b => b.id !== action.payload)
 }}
 })
 
@@ -38,16 +38,16 @@ export const createBlog = content => {
 
 export const likeBlog = object => {
   return async dispatch => {
-    const updatedBlog = await blogService.like(object)
-    dispatch(like(updatedBlog.id))
+    dispatch(like(object.id))
+    await blogService.like(object)
   }
 }
 
 export const removeBlog = object => {
   return async dispatch => {
+    dispatch(remove(object.id))
     await blogService.remove(object.id)
-    const blogs = await blogService.getAll()
-    dispatch(remove(blogs))
+    await blogService.getAll()
 }}
 
 export default blogSlice.reducer
