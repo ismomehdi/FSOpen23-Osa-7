@@ -12,6 +12,7 @@ import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
 import { likeBlog, initializeBlogs, removeBlog } from './reducers/blogReducer'
+import { logUserIn, setUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -22,14 +23,14 @@ const App = () => {
 
   const blogs = useSelector(state => state.blogs)
 
-  const [user, setUser] = useState("");
-
   const blogFormRef = useRef();
 
   useEffect(() => {
     const user = storageService.loadUser();
-    setUser(user);
-  }, []);
+    dispatch(setUser(user));
+  }, [dispatch]);
+
+  const user = useSelector(state => state.user)
 
   const notifyWith = (message, time) => {
     dispatch(setNotification(message, time))
@@ -38,7 +39,7 @@ const App = () => {
   const login = async (username, password) => {
     try {
       const user = await loginService.login({ username, password });
-      setUser(user);
+      dispatch(setUser(user));
       storageService.saveUser(user);
       notifyWith("welcome!", 5);
     } catch (e) {
@@ -47,7 +48,7 @@ const App = () => {
   };
 
   const logout = async () => {
-    setUser(null);
+    dispatch(setUser(null))
     storageService.removeUser();
     notifyWith("logged out");
   };
